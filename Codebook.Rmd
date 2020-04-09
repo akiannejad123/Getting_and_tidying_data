@@ -1,0 +1,110 @@
+---
+title: "CodeBook.Md"
+output: github_document
+by: Amanda Kiannejad
+---
+
+
+## Table of Contents
+1. Variables
+2. Transformation of information 
+3. Explination of the code
+
+# Variables
+ The varibles in the script and dataset are as follows:
+-Value: The Value column is a numerical observation of countinuous data type. These observations The calculations of the mean and standard deviation from the inertial signals dataset. These calculations have already been performed, and are unitless. 
+ 
+-Phase_Type: This is a character observation with two nominal data, with two catagories, value labels: testingor training. Values’ whose corresponding rows have training as their Phase_Type were collected in the training phase, and those who have testing were collected in the testing phase.
+
+-Signal_Domain: This is a character observation with two nominal data catagories, value labels: time and frequency.Values’ whose corresponding rows in the Signal_Domain were gathered from either captured using an “accelerometer and gyroscope 3-axial raw signals. These time domain signals (prefix ‘t’ to denote time) were captured at a constant rate of 50 Hz” or as part of a called a Fast Fouier Transform, (frequency). -Parameter_Type: This is a character observation with two nominal data catagories, Value Labels: gravity or body.
+
+-Parameter_Type: This is a character observation with two nominal data catagories: gravity or body. 
+
+-Physical_Attribute: This is a character obervation with nine nominal data catagoies, Value Labels, as follows: Acceleration, Acceleration_Jerk, Gyroscope, Gyroscope_Jerk, Acceleration_Magnitude, Acceleration_Jerk_Magnitude, Gyroscope_Magnitude, Gyroscope_Jerk_Magnitude, and Acceleration_Jerk
+
+-Axis: This is a character observation with four nominal data catagories, Value Labels: X, Y, Z, NA. These denote which axis the mean or standard deviation were calculated from using the inertial signal data. The NA was introduced for those signals that were not taken from an axis.
+
+-Activity_Name: This is a character observation with six nominal data catagories, Value Labels: Walking, Walking_Upstairs, Walking_downstairs, Sitting, Standing, Laying
+    
+-Subject_Number: This is a character observation with thirty nominal data catagories, Value_Labels:1-30, representing the value assigned by the researchers to the subjects during the training and testing phases.
+   
+-Activity_Value This is a character observation (not numeric) with six catagories which correspond to the Activity_Name variables, Value Labels: 1:Walking, 2:Walking_Upstairs: 3:Walking_downstairs, 4:Sitting, 5:Standing, 6:Laying.
+            
+-Activity_Counts: This is a character observation (converted from numeric, see part2), denoting how many times an Activity_Name/Activity_Value was observed during the two phases, Value Labels:1-100.
+
+
+## Transformation of the Varibles from Orginal Files to Run_Analysis_dataset
+
+
+1.) The orginal information was given as a series of text files To be used for both sets: features.txt activity_labels.txt For training only: subject_train.txt x_train.txt y_train.txt For testing only: subject_test.txt x_test.txt y_test.txt
+
+
+The dimensions of the activity_label.txt files has 6 observations and 2 variables due to the introduction of a space upon reading. It was dealt with by dropping  the V1
+
+The dimensions of the feature.txt read in as Study_features dataframe 561 observations and 1 variable
+
+Then transformed to as a vector Features
+
+
+The dimensions of the x_train.txt read in as Study_x_train dataframe and has 7352 observations and 561 variables
+```{r}
+dim(Study_x_train)
+```
+The dimensions of the y_train.txt read in as Study_y_train dataframe and has 7352 observations and 1 variable.
+```{r}
+dim(Study_y_train)
+```
+The dimensions of the subject_train read in as Study_Subject_training and has 7352 observations and 2 variables.
+```{r}
+dim(Study_Subject_training)
+```
+The dimensions of the x_train.txt read in as Study_x_test dataframe and has 2947 observations and 561 variables.
+```{r}
+dim(Study_x_test)
+```
+The dimensions of the y_train.txt read in as Study_y_test dataframe and has 2947 observations and 1 variable.
+```{r}
+dim(Study_y_test)
+```
+The dimensions of the Subject_test read in as Study_Subject_testing and has 2947 observations and 2 variables.
+```{r}
+dim(Study_Subject_testing)
+```
+
+
+2.) From these files they were read as deliminated files in to R.
+
+3.) From the original files: activity_label files and y_train files were joined together For the training portion of the data and adding descriptive labs to the y training set. 
+
+
+Study_y_train_with_activity_labels <-inner_join(Study_y_train, activity_file, by="Value")
+    colnames(Study_y_train_with_activity_labels) <-c("Activity_Value", "Activity_Name")
+
+head(Study_y_train_with_activity_labels)
+3.2) From the new files adding descriptive labs to the y test set
+Study_y_test_with_activity_labels <-inner_join(Study_y_test, activity_file, by="Value")
+  colnames(Study_y_test_with_activity_labels) <-c("Activity_Value", "Activity_Name")
+  
+head(Study_y_test_with_activity_labels)
+
+Now the Study_y_train_with_activity_labels needs
+#to be joined columnwise to the Study_x_train containing Feature headers
+# This still does not contain Subject data
+
+#Now the Study_y_test_with_activity_labels needs
+#to be joined columnwise to the Study_x_test containing Feature headers
+# This still does not contain Subject data
+Activity_labels_and_features_testing_dataframe <-cbind(Study_y_test_with_activity_labels, Study_x_test)
+#Adding Subject information to the dataframe
+Subject_Activity_and_features_testing_dataframe <-cbind(Study_Subject_testing,Activity_labels_and_features_testing_dataframe)
+#We need to add a column named Phase type all rows containing the char"Training
+# This designates training from testing
+#First make the vector containing the information
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
